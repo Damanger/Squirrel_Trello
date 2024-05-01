@@ -34,6 +34,16 @@
     align-items: center;
 }
 
+.column:nth-child(3){
+    border: solid 5px #BDECB6 !important;
+}
+.column:nth-child(2){
+    border: solid 5px #FDFD96 !important;
+}
+.column:nth-child(1){
+    border: solid 5px #FF6961 !important;
+}
+
 .search-input {
     position: relative;
     padding: 12px;
