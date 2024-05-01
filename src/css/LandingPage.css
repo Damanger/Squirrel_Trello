@@ -12,8 +12,8 @@
 .hero-banner h1 {
     font-size: 10rem;
     margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(80, 80, 80, 0.5); 
-    color: w;
+    text-shadow: 2px 2px 4px #E94BE8; 
+    color: aliceblue;
 }
 
 @media (max-width: 430px) {
@@ -41,7 +41,6 @@
 }
 
 h1:hover{
-    animation: glitch_4011 1.2s infinite linear;
     text-shadow: 2 2px 2px black;
     animation-timing-function: steps(2, end);
     text-shadow: -3px -3px 0px #1df2f0, 3px 3px 0px #E94BE8;

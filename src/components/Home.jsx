@@ -144,7 +144,7 @@ const handleDrop = async (event, newStatus) => {
     // Función para cerrar sesión
     const signOut = () => {
         firebase.auth().signOut().then(() => {
-            window.location.href = '/'; // Redirecciona a la página de inicio después de cerrar sesión
+            console.log('Signed out');
         }).catch((error) => {
             console.error(error);
         });

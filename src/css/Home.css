@@ -27,6 +27,13 @@
     padding: 10px;
 }
 
+.column h2{
+    color: aliceblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .search-input {
     position: relative;
     padding: 12px;
