@@ -5,13 +5,13 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from
 import '../css/LandingPage.css';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDMvttW6uWMalJiQLOlyJwaYdv9HNchHas",
-    authDomain: "squirrel-trello.firebaseapp.com",
-    projectId: "squirrel-trello",
-    storageBucket: "squirrel-trello.appspot.com",
-    messagingSenderId: "349870855963",
-    appId: "1:349870855963:web:95b9eab2f8c0628978e5be",
-    measurementId: "G-2NZBWTDLTQ"
+    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_APP_FIREBASE_APP_ID,
+    measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
