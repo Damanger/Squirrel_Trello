@@ -5,6 +5,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc  } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
+import { toast } from 'react-toastify';
 import 'firebase/compat/auth';
 import '../css/Home.css';
 
@@ -127,9 +128,15 @@ const handleDrop = async (event, newStatus) => {
             const db = getFirestore();
             const user = getAuth().currentUser;
             const userTasksRef = collection(db, `tasks/${user.uid}/userTasks`);
-            await addDoc(userTasksRef, { task: newTask, status: 'todo' });
-            setNewTask('');
-            setIsEmpty(true);
+            try {
+                await addDoc(userTasksRef, { task: newTask, status: 'todo' });
+                setNewTask('');
+                setIsEmpty(true);
+                toast.success('Task added correctly');
+            } catch (error) {
+                console.error('Error adding task:', error);
+                toast.error('Something went wrong');
+            }
         }
     };
 

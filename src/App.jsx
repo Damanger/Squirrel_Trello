@@ -4,6 +4,8 @@ import Home from './components/Home';
 import LandingPage from './components/LandingPage';
 import NotFound from './components/NotFound';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
 const App = () => {
@@ -22,6 +24,7 @@ const App = () => {
 
   return (
     <Router>
+      <ToastContainer />
       <Routes>
         <Route path="/" element={userAuthenticated ? <Home /> : <LandingPage />} />
         <Route path="/home" element={<Home />} />
