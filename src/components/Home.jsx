@@ -6,6 +6,8 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc  } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
 import { toast } from 'react-toastify';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'firebase/compat/auth';
 import '../css/Home.css';
 
@@ -20,6 +22,19 @@ const firebaseConfig = {
 };
 
 const Home = () => {
+    const [showModal, setShowModal] = useState(false);
+    const [taskName, setTaskName] = useState('');
+    const [startDate, setStartDate] = useState(new Date()); // Definir startDate y su función de actualización
+    const [endDate, setEndDate] = useState(new Date()); // Definir endDate y su función de actualización
+    const [tag, setTag] = useState('');
+
+    const handleOpenModal = () => {
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
     const [userAuthenticated, setUserAuthenticated] = useState(false);
     const [tasks, setTasks] = useState({
         todo: [],
@@ -53,11 +68,12 @@ const Home = () => {
             const fetchedTasks = { todo: [], doing: [], done: [] };
             snapshot.forEach((doc) => {
                 const taskData = doc.data();
-                fetchedTasks[taskData.status].push({ id: doc.id, task: taskData.task });
+                fetchedTasks[taskData.status].push({ id: doc.id, ...taskData }); // Incluir todas las propiedades de la tarea
             });
             setTasks(fetchedTasks);
         });
     };
+    
 
     // Verificar si el usuario está autenticado, si no, redirigir a la página de inicio
     if (!userAuthenticated) {
@@ -121,22 +137,49 @@ const handleDrop = async (event, newStatus) => {
         setIsEmpty(value.trim() === ''); // Verifica si el input está vacío
     };
 
+    // Función para manejar el envío del formulario
+    const handleSubmit = (event) => {   
+        event.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
+        // Verificar si todos los campos obligatorios están llenos
+        if (taskName.trim() !== '' && tag.trim() !== '') {
+            // Llamar a la función handleAddTask con los datos del formulario
+            handleAddTask({
+                taskName: taskName,
+                startDate: startDate,
+                endDate: endDate,
+                tag: tag
+            });
+            // Cerrar el modal después de agregar la tarea correctamente
+            handleCloseModal();
+        } else {
+            // Mostrar mensaje de error si los campos obligatorios están vacíos
+            toast.error('Please fill all required fields');
+        }
+    };
+
     // Función para agregar una nueva tarea
-    const handleAddTask = async (event) => {
-        event.preventDefault();
-        if (newTask.trim() !== '') {
-            const db = getFirestore();
-            const user = getAuth().currentUser;
-            const userTasksRef = collection(db, `tasks/${user.uid}/userTasks`);
-            try {
-                await addDoc(userTasksRef, { task: newTask, status: 'todo' });
-                setNewTask('');
-                setIsEmpty(true);
-                toast.success('Task added correctly');
-            } catch (error) {
-                console.error('Error adding task:', error);
-                toast.error('Something went wrong');
-            }
+    const handleAddTask = async ({ taskName, startDate, endDate, tag }) => {
+        const db = getFirestore();
+        const user = getAuth().currentUser;
+        const userTasksRef = collection(db, `tasks/${user.uid}/userTasks`);
+        try {
+            await addDoc(userTasksRef, { 
+                task: taskName, 
+                startDate: startDate, 
+                endDate: endDate, 
+                tag: tag, 
+                status: 'todo' 
+            });
+            // Limpiar los campos del formulario después de agregar la tarea
+            setTaskName('');
+            setStartDate(new Date());
+            setEndDate(new Date());
+            setTag('');
+            // Mostrar mensaje de éxito
+            toast.success('Task added correctly');
+        } catch (error) {
+            console.error('Error adding task:', error);
+            toast.error('Something went wrong');
         }
     };
 
@@ -166,20 +209,58 @@ const handleDrop = async (event, newStatus) => {
     return (
         <div className="home-container">
             <div className="adding">
-            <input
-                className="search-input"
-                type="text"
-                value={newTask}
-                onChange={handleInputChange}
-                onKeyUp={(event) => {
-                    if (event.key === 'Enter') {
-                        handleAddTask(event);
-                    }
-                }}
-                placeholder="Add a new task"
-            />
-                <button onClick={handleAddTask} disabled={isEmpty}>Add Task</button>
+                <button onClick={handleOpenModal}>Add Task</button>
             </div>
+            {/* Modal */}
+            {showModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={handleCloseModal}>&times;</span>
+                        <h2>Add a new task</h2>
+                        <form onSubmit={handleAddTask}>
+                            <div className="form-group">
+                                <label htmlFor="taskName">Task Name:</label>
+                                <input
+                                    type="text"
+                                    id="taskName"
+                                    value={taskName}
+                                    onChange={(e) => setTaskName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="startDate">Start Date:</label>
+                                <DatePicker
+                                    selected={startDate}
+                                    onChange={(date) => setStartDate(date)}
+                                    dateFormat="yyyy-MM-dd"
+                                    minDate={new Date()} // Establece la fecha mínima como la fecha actual
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="endDate">End Date:</label>
+                                <DatePicker
+                                    selected={endDate}
+                                    onChange={(date) => setEndDate(date)}
+                                    dateFormat="yyyy-MM-dd"
+                                    minDate={startDate} // Establece la fecha mínima como startDate
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="tag">Tag:</label>
+                                <input
+                                    type="text"
+                                    id="tag"
+                                    value={tag}
+                                    onChange={(e) => setTag(e.target.value)}
+                                />
+                            </div>
+                            <button type="submit" onClick={handleSubmit}>Add Task</button>
+                        </form>
+                    </div>
+                </div>
+            )}
             <div className="sign-out-container">
                 <button onClick={signOut}>Sign Out</button>
             </div>
@@ -189,7 +270,16 @@ const handleDrop = async (event, newStatus) => {
                     {tasks.todo.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'todo')}>
                             <div className="task-content">
-                                <p>{task.task}</p>
+                                <p>
+                                    <strong>{task.task}</strong>
+                                    <br />
+                                    Start Date: {task.startDate.toDate().toDateString()}
+                                    <br />
+                                    End Date: {task.endDate.toDate().toDateString()}
+                                    <br />
+                                    <br />
+                                    Tag: <span>{task.tag}</span>
+                                </p>
                                 <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('todo', task.id)} />
                             </div>
                         </div>
@@ -200,7 +290,16 @@ const handleDrop = async (event, newStatus) => {
                     {tasks.doing.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'doing')}>
                             <div className="task-content">
-                                <p>{task.task}</p>
+                                <p>
+                                    <strong>{task.task}</strong>
+                                    <br />
+                                    Start Date: {task.startDate.toDate().toDateString()}
+                                    <br />
+                                    End Date: {task.endDate.toDate().toDateString()}
+                                    <br />
+                                    <br />
+                                    Tag: <span>{task.tag}</span>
+                                </p>
                                 <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('doing', task.id)} />
                             </div>
                         </div>
@@ -211,7 +310,16 @@ const handleDrop = async (event, newStatus) => {
                     {tasks.done.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'done')}>
                             <div className="task-content">
-                                <p>{task.task}</p>
+                                <p>
+                                    <strong>{task.task}</strong>
+                                    <br />
+                                    Start Date: {task.startDate.toDate().toDateString()}
+                                    <br />
+                                    End Date: {task.endDate.toDate().toDateString()}
+                                    <br />
+                                    <br />
+                                    Tag: <span>{task.tag}</span>
+                                </p>
                                 <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('done', task.id)} />
                             </div>
                         </div>
