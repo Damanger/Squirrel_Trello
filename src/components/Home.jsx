@@ -145,7 +145,13 @@ const handleDrop = async (event, newStatus) => {
         const db = getFirestore();
         const user = getAuth().currentUser;
         const userTaskRef = doc(db, `tasks/${user.uid}/userTasks`, taskId);
-        await deleteDoc(userTaskRef);
+        try {
+            await deleteDoc(userTaskRef);
+            toast.success('Deleted correctly');
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            toast.error('Something went wrong');
+        }
     };
 
     // Función para cerrar sesión
