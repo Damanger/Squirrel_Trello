@@ -33,3 +33,7 @@ body{
     background: linear-gradient(transparent, gainsboro);
     border-radius: 0.5rem;
 }
+
+@media (max-width: 520px){
+    overflow-y:visible;
+}
