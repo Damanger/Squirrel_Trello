@@ -28,6 +28,8 @@
     background: rgba(255, 255, 255, .1);
     backdrop-filter: blur(2px);
     border-radius: 20px;
+    overflow-y: auto; 
+    max-height: 75vh;
 }
 
 .column h2{
