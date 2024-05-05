@@ -254,7 +254,7 @@ const handleDrop = async (event, newStatus) => {
             </div>
             <div className="columns-container">
                 <div className="column" onDrop={(event) => handleDrop(event, 'todo')} onDragOver={(event) => allowDrop(event, 'todo')}>
-                    <h1>ToDo</h1>
+                    <h2>ToDo</h2>
                     {tasks.todo.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'todo')}>
                             <div className="task-content">
@@ -274,7 +274,7 @@ const handleDrop = async (event, newStatus) => {
                     ))}
                 </div>
                 <div className="column" onDrop={(event) => handleDrop(event, 'doing')} onDragOver={(event) => allowDrop(event, 'doing')}>
-                    <h1>Doing</h1>
+                    <h2>Doing</h2>
                     {tasks.doing.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'doing')}>
                             <div className="task-content">
@@ -294,7 +294,7 @@ const handleDrop = async (event, newStatus) => {
                     ))}
                 </div>
                 <div className="column" onDrop={(event) => handleDrop(event, 'done')} onDragOver={(event) => allowDrop(event, 'done')}>
-                    <h1>Done</h1>
+                    <h2>Done</h2>
                     {tasks.done.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'done')}>
                             <div className="task-content">

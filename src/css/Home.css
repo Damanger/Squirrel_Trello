@@ -23,18 +23,25 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
-    background: rgba(255, 255, 255, .1);
+    background: rgba(0, 0, 0, .1);
     backdrop-filter: blur(2px);
     border-radius: 20px;
     overflow-y: auto; 
     max-height: 60vh;
+    position: relative;
 }
 
-.column h1{
-    color: aliceblue;
+.column h2{
+    color: rgb(0, 255, 213);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);
     display: flex;
     justify-content: center;
     align-items: center;
+    position: sticky;
+    top: 0;
+    background: rgba(255, 255, 255, .5);
+    backdrop-filter: blur(2px);
+    font-size: 2rem;
 }
 
 .column:nth-child(3){
@@ -47,55 +54,8 @@
     border: solid 5px #FF6961 !important;
 }
 
-.search-input {
-    position: relative;
-    padding: 12px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    background: linear-gradient(to right, #d9d9d9, #f8f8f8);
-    color: #555;
-    outline: none;
-    transition: box-shadow 0.3s ease, 0.3s ease, color 0.3s ease,
-        border-color 0.3s ease, transform 0.3s ease;
-    transform-style: preserve-3d;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1), 0 0 5px rgba(0, 0, 0, 0.2) inset;
-}
-
-.search-input:focus, .search-input:not(:placeholder-shown) {
-    border-color: #4caf50;
-    background: linear-gradient(to right, #c2f0c2, #f0f0f0);
-    transform: rotateX(20deg);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.2) inset; 
-}
-
-.search-input:focus + .label, .search-input:not(:placeholder-shown) + .label {
-    transform: translateY(-120%) scale(0.8);
-    font-size: 12px;
-    color: #4caf50;
-    text-shadow: 0 0 5px rgba(76, 175, 80, 0.6);
-}
-
-.search-input:focus + .search-icon {
-    color: #4caf50;
-    transform: translateY(-50%) scale(1.1);
-    filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.6));
-}
-
-@keyframes inputPulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-.search-input:focus {
-    animation: inputPulse 0.5s ease;
-}
-
 .card {
-    background-color: #f9f9f9;
+    background-color: #f0f0f0;
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
