@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faAdd, faA } from '@fortawesome/free-solid-svg-icons';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc  } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
@@ -41,9 +41,7 @@ const Home = () => {
         doing: [],
         done: []
     });
-    const [newTask, setNewTask] = useState('');
     const [draggingOver, setDraggingOver] = useState(null);
-    const [isEmpty, setIsEmpty] = useState(true);
 
     useEffect(() => {
         const auth = getAuth();
@@ -130,13 +128,6 @@ const handleDrop = async (event, newStatus) => {
         setDraggingOver(column); // Actualiza la columna sobre la que se está arrastrando
     };
 
-    // Función para manejar el cambio en el input de nuevo task
-    const handleInputChange = (event) => {
-        const value = event.target.value;
-        setNewTask(value);
-        setIsEmpty(value.trim() === ''); // Verifica si el input está vacío
-    };
-
     // Función para manejar el envío del formulario
     const handleSubmit = (event) => {   
         event.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
@@ -208,15 +199,12 @@ const handleDrop = async (event, newStatus) => {
 
     return (
         <div className="home-container">
-            <div className="adding">
-                <button onClick={handleOpenModal}>Add Task</button>
-            </div>
             {/* Modal */}
             {showModal && (
                 <div className="modal">
                     <div className="modal-content">
                         <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h2>Add a new task</h2>
+                        <h1>Add a new task</h1>
                         <form onSubmit={handleAddTask}>
                             <div className="form-group">
                                 <label htmlFor="taskName">Task Name:</label>
@@ -266,7 +254,7 @@ const handleDrop = async (event, newStatus) => {
             </div>
             <div className="columns-container">
                 <div className="column" onDrop={(event) => handleDrop(event, 'todo')} onDragOver={(event) => allowDrop(event, 'todo')}>
-                    <h2>ToDo</h2>
+                    <h1>ToDo</h1>
                     {tasks.todo.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'todo')}>
                             <div className="task-content">
@@ -286,7 +274,7 @@ const handleDrop = async (event, newStatus) => {
                     ))}
                 </div>
                 <div className="column" onDrop={(event) => handleDrop(event, 'doing')} onDragOver={(event) => allowDrop(event, 'doing')}>
-                    <h2>Doing</h2>
+                    <h1>Doing</h1>
                     {tasks.doing.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'doing')}>
                             <div className="task-content">
@@ -306,7 +294,7 @@ const handleDrop = async (event, newStatus) => {
                     ))}
                 </div>
                 <div className="column" onDrop={(event) => handleDrop(event, 'done')} onDragOver={(event) => allowDrop(event, 'done')}>
-                    <h2>Done</h2>
+                    <h1>Done</h1>
                     {tasks.done.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'done')}>
                             <div className="task-content">
@@ -325,6 +313,9 @@ const handleDrop = async (event, newStatus) => {
                         </div>
                     ))}
                 </div>
+            </div>
+            <div className="adding">
+                <button className='add' onClick={handleOpenModal}><FontAwesomeIcon icon={faAdd} /></button>
             </div>
             {/* Muestra el indicador de arrastre solo cuando se arrastra sobre una columna */}
             {draggingOver && <div className="drag-indicator">{`Drop here into ${draggingOver}`}</div>}
