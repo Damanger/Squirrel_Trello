@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faAdd, faA } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faAdd } from '@fortawesome/free-solid-svg-icons';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc  } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
@@ -204,7 +204,7 @@ const handleDrop = async (event, newStatus) => {
                 <div className="modal">
                     <div className="modal-content">
                         <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h1>Add a new task</h1>
+                        <h2>Add a new task</h2>
                         <form onSubmit={handleAddTask}>
                             <div className="form-group">
                                 <label htmlFor="taskName">Task Name:</label>

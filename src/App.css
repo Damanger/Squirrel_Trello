@@ -26,7 +26,7 @@ body{
 }
 
 ::-webkit-scrollbar{
-    width: 0.25rem;
+    width: 0.2rem;
 }
 
 ::-webkit-scrollbar-thumb{
@@ -38,4 +38,12 @@ body{
     body{
         overflow-y: visible;
     }
+}
+
+h1,h2,h3{
+    cursor: default;
+}
+
+button{
+    cursor: pointer;
 }

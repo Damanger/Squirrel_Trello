@@ -45,13 +45,23 @@
 }
 
 .column:nth-child(3){
-    border: solid 5px #BDECB6 !important;
+    border: solid 3px #A5EEA0 !important;
 }
 .column:nth-child(2){
-    border: solid 5px #FDFD96 !important;
+    border: solid 3px #FDFD96 !important;
 }
 .column:nth-child(1){
-    border: solid 5px #FF6961 !important;
+    border: solid 3px #FF6961 !important;
+}
+
+.column:nth-child(3) > .card{
+    border-right: solid 5px #A9E9A4 !important;
+}
+.column:nth-child(2) > .card{
+    border-right: solid 5px #F7F991 !important;
+}
+.column:nth-child(1) > .card{
+    border-right: solid 5px #FF6961 !important;
 }
 
 .card {
