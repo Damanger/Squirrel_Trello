@@ -55,13 +55,13 @@
 }
 
 .column:nth-child(3) > .card{
-    border-right: solid 5px #A9E9A4 !important;
+    border-right: solid 5px #77e070 !important;
 }
 .column:nth-child(2) > .card{
-    border-right: solid 5px #F7F991 !important;
+    border-right: solid 5px #f8fb59 !important;
 }
 .column:nth-child(1) > .card{
-    border-right: solid 5px #FF6961 !important;
+    border-right: solid 5px #ff4d44 !important;
 }
 
 .card {
