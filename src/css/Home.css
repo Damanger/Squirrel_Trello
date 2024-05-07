@@ -114,7 +114,7 @@
     justify-content: flex-end;
 }
 
-.add{
+.add {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -264,7 +264,6 @@ label {
     cursor: pointer;
 }
 
-/* Estilos para animación */
 .modal-enter {
     opacity: 0;
 }

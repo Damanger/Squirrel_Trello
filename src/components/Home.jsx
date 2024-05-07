@@ -22,11 +22,11 @@ const firebaseConfig = {
 };
 
 const Home = () => {
-    const [showModal, setShowModal] = useState(false);
-    const [taskName, setTaskName] = useState('');
+    const [showModal, setShowModal] = useState(false); // Definir showModal y su función de actualización
+    const [taskName, setTaskName] = useState(''); // Definir taskName y su función de actualización
     const [startDate, setStartDate] = useState(new Date()); // Definir startDate y su función de actualización
     const [endDate, setEndDate] = useState(new Date()); // Definir endDate y su función de actualización
-    const [tag, setTag] = useState('');
+    const [tag, setTag] = useState(''); // Definir tag y su función de actualización
 
     const handleOpenModal = () => {
         setShowModal(true);
