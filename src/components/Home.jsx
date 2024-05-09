@@ -200,10 +200,10 @@ const handleDrop = async (event, newStatus) => {
                 <div className="modal">
                     <div className="modal-content">
                         <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h2>Add a new task</h2>
+                        <h2>Add a new task 📋</h2>
                         <form onSubmit={handleAddTask}>
                             <div className="form-group">
-                                <label htmlFor="taskName">Task Name:</label>
+                                <label htmlFor="taskName">Task Name 📄 :</label>
                                 <input
                                     type="text"
                                     id="taskName"
@@ -213,7 +213,7 @@ const handleDrop = async (event, newStatus) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="startDate">Start Date:</label>
+                                <label htmlFor="startDate">Start Date 🗓️ :</label>
                                 <DatePicker
                                     selected={startDate}
                                     onChange={(date) => setStartDate(date)}
@@ -223,7 +223,7 @@ const handleDrop = async (event, newStatus) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="endDate">End Date:</label>
+                                <label htmlFor="endDate">End Date 🏁 :</label>
                                 <DatePicker
                                     selected={endDate}
                                     onChange={(date) => setEndDate(date)}
@@ -232,7 +232,7 @@ const handleDrop = async (event, newStatus) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="tag">Tag:</label>
+                                <label htmlFor="tag">Tag 🏷️ :</label>
                                 <input
                                     type="text"
                                     id="tag"
