@@ -82,10 +82,6 @@ const Home = () => {
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
-    // Inicializar Firebase si no está inicializado
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
 
     // Función para manejar el inicio del arrastre
     const handleDragStart = (event, task, status) => {
