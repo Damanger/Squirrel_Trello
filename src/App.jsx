@@ -5,6 +5,7 @@ import LandingPage from './components/LandingPage';
 import NotFound from './components/NotFound';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { ToastContainer } from 'react-toastify';
+import ParticlesComponent from './components/Particles';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -25,6 +26,7 @@ const App = () => {
   return (
     <Router>
       <ToastContainer />
+      <ParticlesComponent />
       <Routes>
         <Route path="/" element={userAuthenticated ? <Home /> : <LandingPage />} />
         <Route path="/home" element={<Home />} />
