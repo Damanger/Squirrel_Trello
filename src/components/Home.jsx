@@ -82,10 +82,6 @@ const Home = () => {
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
-    // Inicializar Firebase si no está inicializado
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
 
     // Función para manejar el inicio del arrastre
     const handleDragStart = (event, task, status) => {
@@ -204,10 +200,10 @@ const handleDrop = async (event, newStatus) => {
                 <div className="modal">
                     <div className="modal-content">
                         <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h2>Add a new task</h2>
+                        <h2>Add a new task 📋</h2>
                         <form onSubmit={handleAddTask}>
                             <div className="form-group">
-                                <label htmlFor="taskName">Task Name:</label>
+                                <label htmlFor="taskName">Task Name 📄 :</label>
                                 <input
                                     type="text"
                                     id="taskName"
@@ -217,7 +213,7 @@ const handleDrop = async (event, newStatus) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="startDate">Start Date:</label>
+                                <label htmlFor="startDate">Start Date 🗓️ :</label>
                                 <DatePicker
                                     selected={startDate}
                                     onChange={(date) => setStartDate(date)}
@@ -227,7 +223,7 @@ const handleDrop = async (event, newStatus) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="endDate">End Date:</label>
+                                <label htmlFor="endDate">End Date 🏁 :</label>
                                 <DatePicker
                                     selected={endDate}
                                     onChange={(date) => setEndDate(date)}
@@ -236,7 +232,7 @@ const handleDrop = async (event, newStatus) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="tag">Tag:</label>
+                                <label htmlFor="tag">Tag 🏷️ :</label>
                                 <input
                                     type="text"
                                     id="tag"
@@ -254,7 +250,7 @@ const handleDrop = async (event, newStatus) => {
             </div>
             <div className="columns-container">
                 <div className="column" onDrop={(event) => handleDrop(event, 'todo')} onDragOver={(event) => allowDrop(event, 'todo')}>
-                    <h2>ToDo</h2>
+                    <h2>📋 To Do 📋</h2>
                     {tasks.todo.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'todo')}>
                             <div className="task-content">
@@ -274,7 +270,7 @@ const handleDrop = async (event, newStatus) => {
                     ))}
                 </div>
                 <div className="column" onDrop={(event) => handleDrop(event, 'doing')} onDragOver={(event) => allowDrop(event, 'doing')}>
-                    <h2>Doing</h2>
+                    <h2>👨🏻‍💻 Doing 👩🏻‍💻</h2>
                     {tasks.doing.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'doing')}>
                             <div className="task-content">
@@ -294,7 +290,7 @@ const handleDrop = async (event, newStatus) => {
                     ))}
                 </div>
                 <div className="column" onDrop={(event) => handleDrop(event, 'done')} onDragOver={(event) => allowDrop(event, 'done')}>
-                    <h2>Done</h2>
+                    <h2>✅ Done ✅</h2>
                     {tasks.done.map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'done')}>
                             <div className="task-content">
