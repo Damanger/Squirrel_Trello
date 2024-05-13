@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 const ParticlesComponent = () => {
     useEffect(() => {
         const script = document.createElement('script');
-        script.src = '/node_modules/particles.js/particles.js';
+        script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js';
         script.async = true;
         document.body.appendChild(script);
 
