@@ -26,7 +26,7 @@ const Home = () => {
     const [taskName, setTaskName] = useState(''); // Definir taskName y su función de actualización
     const [startDate, setStartDate] = useState(new Date()); // Definir startDate y su función de actualización
     const [endDate, setEndDate] = useState(new Date()); // Definir endDate y su función de actualización
-    const [tag, setTag] = useState(''); // Definir tag y su función de actualización
+    const [tag, setTag] = useState({ value: "", label: "" }); // Estado para el tag
 
     const handleOpenModal = () => {
         setShowModal(true);
@@ -89,34 +89,34 @@ const Home = () => {
     };
 
     // Función para manejar la caída de la tarjeta en una columna
-const handleDrop = async (event, newStatus) => {
-    event.preventDefault();
-    const data = JSON.parse(event.dataTransfer.getData('text/plain'));
-    const { task, status } = data;
+    const handleDrop = async (event, newStatus) => {
+        event.preventDefault();
+        const data = JSON.parse(event.dataTransfer.getData('text/plain'));
+        const { task, status } = data;
 
-    if (status !== newStatus) {
-        const db = getFirestore();
-        const user = getAuth().currentUser;
-        const taskRef = doc(db, `tasks/${user.uid}/userTasks`, task.id);
+        if (status !== newStatus) {
+            const db = getFirestore();
+            const user = getAuth().currentUser;
+            const taskRef = doc(db, `tasks/${user.uid}/userTasks`, task.id);
 
-        try {
-            // Actualizar el estado de la tarea en la base de datos
-            await updateDoc(taskRef, { status: newStatus });
-        } catch (error) {
-            console.error('Error updating task status:', error);
-            return;
+            try {
+                // Actualizar el estado de la tarea en la base de datos
+                await updateDoc(taskRef, { status: newStatus });
+            } catch (error) {
+                console.error('Error updating task status:', error);
+                return;
+            }
+
+            const updatedTasks = { ...tasks };
+            const taskIndex = updatedTasks[status].findIndex(t => t.id === task.id);
+            const movedTask = updatedTasks[status].splice(taskIndex, 1)[0];
+            movedTask.status = newStatus;
+            updatedTasks[newStatus].push(movedTask);
+            setTasks(updatedTasks);
         }
 
-        const updatedTasks = { ...tasks };
-        const taskIndex = updatedTasks[status].findIndex(t => t.id === task.id);
-        const movedTask = updatedTasks[status].splice(taskIndex, 1)[0];
-        movedTask.status = newStatus;
-        updatedTasks[newStatus].push(movedTask);
-        setTasks(updatedTasks);
-    }
-
-    setDraggingOver(null); // Reinicia el estado de arrastre cuando se suelta la tarjeta
-};
+        setDraggingOver(null); // Reinicia el estado de arrastre cuando se suelta la tarjeta
+    };
 
     // Función para permitir que la tarjeta sea soltada en una columna
     const allowDrop = (event, column) => {
@@ -128,7 +128,7 @@ const handleDrop = async (event, newStatus) => {
     const handleSubmit = (event) => {   
         event.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
         // Verificar si todos los campos obligatorios están llenos
-        if (taskName.trim() !== '' && tag.trim() !== '') {
+        if (taskName.trim() !== '' && tag.toString().trim() !== '') { // Convertir tag a cadena de texto
             // Llamar a la función handleAddTask con los datos del formulario
             handleAddTask({
                 taskName: taskName,
@@ -154,14 +154,14 @@ const handleDrop = async (event, newStatus) => {
                 task: taskName, 
                 startDate: startDate, 
                 endDate: endDate, 
-                tag: tag, 
+                tag: tag.label,
                 status: 'todo' 
             });
             // Limpiar los campos del formulario después de agregar la tarea
             setTaskName('');
             setStartDate(new Date());
             setEndDate(new Date());
-            setTag('');
+            setTag({ value: "", label: "" }); // Restablecer el estado del tag
             // Mostrar mensaje de éxito
             toast.success('Task added correctly');
         } catch (error) {
@@ -181,6 +181,16 @@ const handleDrop = async (event, newStatus) => {
         } catch (error) {
             console.error('Error deleting task:', error);
             toast.error('Something went wrong');
+        }
+    };
+
+    // Función para manejar el cambio en el select
+    const handleTagChange = (event) => {
+        const value = event.target.value;
+        const label = event.target.options[event.target.selectedIndex].text; // Obtener el texto de la opción seleccionada
+        // Si el valor es una opción válida diferente a "Selecciona una opción", se actualiza el estado tag
+        if (value !== "") {
+            setTag({ value, label }); // Actualizar el estado tag con el valor y la etiqueta
         }
     };
 
@@ -210,6 +220,7 @@ const handleDrop = async (event, newStatus) => {
                                     value={taskName}
                                     onChange={(e) => setTaskName(e.target.value)}
                                     required
+                                    autoComplete='off'
                                 />
                             </div>
                             <div className="form-group">
@@ -233,12 +244,14 @@ const handleDrop = async (event, newStatus) => {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="tag">Tag 🏷️ :</label>
-                                <input
-                                    type="text"
-                                    id="tag"
-                                    value={tag}
-                                    onChange={(e) => setTag(e.target.value)}
-                                />
+                                <select id="tag" value={tag.value} onChange={handleTagChange} required>
+                                    <option value="" disabled>Selecciona una opción</option>
+                                    <option value="Sin especificar">Sin especificar</option>
+                                    <option value="Bajo">Bajo</option>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Importante">Importante</option>
+                                    <option value="Urgente">Urgente</option>
+                                </select>
                             </div>
                             <button type="submit" onClick={handleSubmit}>Add Task</button>
                         </form>
@@ -262,7 +275,7 @@ const handleDrop = async (event, newStatus) => {
                                     End Date: {task.endDate.toDate().toDateString()}
                                     <br />
                                     <br />
-                                    Tag: <span>{task.tag}</span>
+                                    Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
                                 <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('todo', task.id)} />
                             </div>
@@ -282,7 +295,7 @@ const handleDrop = async (event, newStatus) => {
                                     End Date: {task.endDate.toDate().toDateString()}
                                     <br />
                                     <br />
-                                    Tag: <span>{task.tag}</span>
+                                    Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
                                 <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('doing', task.id)} />
                             </div>
@@ -302,7 +315,7 @@ const handleDrop = async (event, newStatus) => {
                                     End Date: {task.endDate.toDate().toDateString()}
                                     <br />
                                     <br />
-                                    Tag: <span>{task.tag}</span>
+                                    Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
                                 <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('done', task.id)} />
                             </div>

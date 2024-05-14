@@ -97,11 +97,47 @@
     font-size: 2rem;
 }
 
-.task-content p span{
-    background: #AEC6CF;
+.task-content p span {
     border-radius: 10px;
     padding: 0.25rem;
 }
+
+.task-content p span {
+    border-radius: 10px;
+    padding: 0.25rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.task-content p span.Sin-especificar {
+    background-color: green;
+    color: white;
+    font-weight: lighter;
+}
+
+.task-content p span.Bajo {
+    background-color: #d1d10b;
+    color: white;
+    font-weight: lighter;
+}
+
+.task-content p span.Normal {
+    background-color: #cb8607;
+    color: white;
+    font-weight: lighter;
+}
+
+.task-content p span.Importante {
+    background-color: #c84a34;
+    color: white;
+    font-weight: lighter;
+}
+
+.task-content p span.Urgente {
+    background-color: #bb0808;
+    color: white;
+    font-weight: lighter;
+}
+
 
 .delete {
     margin-left: auto;
