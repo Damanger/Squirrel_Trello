@@ -216,6 +216,15 @@ const Home = () => {
         return diffDays;
     };
 
+    // Función para ordenar las tareas en función de los días restantes
+    const sortTasksByDaysRemaining = (tasks) => {
+        return tasks.sort((a, b) => {
+            const daysDifferenceA = calculateDaysDifference(a.startDate.toDate(), a.endDate.toDate());
+            const daysDifferenceB = calculateDaysDifference(b.startDate.toDate(), b.endDate.toDate());
+            return daysDifferenceA - daysDifferenceB; // Orden ascendente
+        });
+    };
+
     // Componente para mostrar el contador de días
     const DaysCounter = ({ startDate, endDate }) => {
         const daysDifference = calculateDaysDifference(startDate, endDate);
@@ -289,7 +298,7 @@ const Home = () => {
             <div className="columns-container">
                 <div className="column" onDrop={(event) => handleDrop(event, 'todo')} onDragOver={(event) => allowDrop(event, 'todo')}>
                     <h2>📋 To Do 📋</h2>
-                    {tasks.todo.map((task) => (
+                    {sortTasksByDaysRemaining(tasks.todo).map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'todo')}>
                             <div className="task-content">
                                 <p>
@@ -311,7 +320,7 @@ const Home = () => {
                 </div>
                 <div className="column" onDrop={(event) => handleDrop(event, 'doing')} onDragOver={(event) => allowDrop(event, 'doing')}>
                     <h2>👨🏻‍💻 Doing 👩🏻‍💻</h2>
-                    {tasks.doing.map((task) => (
+                    {sortTasksByDaysRemaining(tasks.doing).map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'doing')}>
                             <div className="task-content">
                                 <p>
@@ -333,7 +342,7 @@ const Home = () => {
                 </div>
                 <div className="column" onDrop={(event) => handleDrop(event, 'done')} onDragOver={(event) => allowDrop(event, 'done')}>
                     <h2>✅ Done ✅</h2>
-                    {tasks.done.map((task) => (
+                    {sortTasksByDaysRemaining(tasks.done).map((task) => (
                         <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'done')}>
                             <div className="task-content">
                                 <p>

@@ -71,7 +71,11 @@
     padding: 10px;
     margin-bottom: 10px;
     height: fit-content;
-    cursor: move;
+    cursor: grab;
+}
+
+.card:active {
+    cursor: grabbing;
 }
 
 .drag-indicator {
