@@ -309,11 +309,11 @@ const Home = () => {
                                 <label htmlFor="tag">Tag 🏷️ :</label>
                                 <select id="tag" value={tag.value} onChange={handleTagChange} required>
                                     <option value="" disabled>Selecciona una opción</option>
-                                    <option value="Sin especificar">Sin especificar</option>
-                                    <option value="Bajo">Bajo</option>
+                                    <option value="Unspecified">Unspecified</option>
+                                    <option value="Low">Low</option>
                                     <option value="Normal">Normal</option>
-                                    <option value="Importante">Importante</option>
-                                    <option value="Urgente">Urgente</option>
+                                    <option value="Important">Important</option>
+                                    <option value="Urgent">Urgent</option>
                                 </select>
                             </div>
                             <button type="submit" onClick={handleSubmit}>Add Task</button>
