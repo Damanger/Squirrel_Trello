@@ -97,6 +97,10 @@
     margin-right: 10px;
 }
 
+.task-content p:nth-child(1) {
+    flex: 1;
+}
+
 .task-content p strong{
     font-size: 2rem;
 }

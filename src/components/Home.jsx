@@ -250,7 +250,10 @@ const Home = () => {
         const userTaskRef = doc(db, `tasks/${user.uid}/userTasks`, editingTask.id);
     
         try {
-            await updateDoc(userTaskRef, { task: editingTask.task }); // Actualizar solo el nombre de la tarea
+            await updateDoc(userTaskRef, { 
+                task: editingTask.task,
+                tag: editingTask.tag 
+            }); // Actualizar nombre, fechas y tag de la tarea
             setEditingTask(null); // Cerrar el modal después de la edición
             toast.success('Task updated correctly');
         } catch (error) {
@@ -331,6 +334,16 @@ const Home = () => {
                                     autoComplete='off'
                                 />
                             </div>
+                            <div className="form-group">
+                                <label htmlFor="editTag">Tag 🏷️ :</label>
+                                <select id="editTag" value={editingTask.tag} onChange={(e) => setEditingTask({ ...editingTask, tag: e.target.value })} required>
+                                    <option value="Sin especificar">Sin especificar</option>
+                                    <option value="Bajo">Bajo</option>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Importante">Importante</option>
+                                    <option value="Urgente">Urgente</option>
+                                </select>
+                            </div>
                             <button type="submit">Save Changes</button>
                         </form>
                     </div>
@@ -347,14 +360,15 @@ const Home = () => {
                             <div className="task-content">
                                 <p>
                                     <strong>{task.task}</strong>
-                                    <br />
+                                    <br/>
+                                    <br/>
                                     Start Date: {task.startDate.toDate().toDateString()}
-                                    <br />
+                                    <br/>
                                     End Date: {task.endDate.toDate().toDateString()}
-                                    <br />
+                                    <br/>
                                     <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
-                                    <br />
-                                    <br />
+                                    <br/>
+                                    <br/>
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
                                 <p>
@@ -374,14 +388,15 @@ const Home = () => {
                             <div className="task-content">
                                 <p>
                                     <strong>{task.task}</strong>
-                                    <br />
+                                    <br/>
+                                    <br/>
                                     Start Date: {task.startDate.toDate().toDateString()}
-                                    <br />
+                                    <br/>
                                     End Date: {task.endDate.toDate().toDateString()}
-                                    <br />
+                                    <br/>
                                     <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
-                                    <br />
-                                    <br />
+                                    <br/>
+                                    <br/>
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
                                 <p>
@@ -401,14 +416,15 @@ const Home = () => {
                             <div className="task-content">
                                 <p>
                                     <strong>{task.task}</strong>
-                                    <br />
+                                    <br/>
+                                    <br/>
                                     Start Date: {task.startDate.toDate().toDateString()}
-                                    <br />
+                                    <br/>
                                     End Date: {task.endDate.toDate().toDateString()}
-                                    <br />
+                                    <br/>
                                     <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
-                                    <br />
-                                    <br />
+                                    <br/>
+                                    <br/>
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
                                 <p>
