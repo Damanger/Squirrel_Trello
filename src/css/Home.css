@@ -317,3 +317,11 @@ label {
     opacity: 0;
     transition: opacity 300ms;
 }
+
+.red-text {
+    color: red;
+}
+
+.normal-text {
+    color: inherit;
+}

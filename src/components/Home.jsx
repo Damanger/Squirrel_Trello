@@ -209,6 +209,25 @@ const Home = () => {
         });
     };
 
+    // Función para calcular la diferencia de días entre dos fechas
+    const calculateDaysDifference = (startDate, endDate) => {
+        const oneDay = 24 * 60 * 60 * 1000; // horas * minutos * segundos * milisegundos
+        const diffDays = Math.round(Math.abs((endDate - startDate) / oneDay)); // Redondear el resultado para obtener un número entero
+        return diffDays;
+    };
+
+    // Componente para mostrar el contador de días
+    const DaysCounter = ({ startDate, endDate }) => {
+        const daysDifference = calculateDaysDifference(startDate, endDate);
+        // Determinar la clase CSS en función de los días restantes
+        const textColorClass = daysDifference <= 5 ? 'red-text' : 'normal-text';
+        return (
+            <div className={textColorClass}>
+                Days remaining: {daysDifference}
+            </div>
+        );
+    };
+
     return (
         <div className="home-container">
             {/* Modal */}
@@ -280,6 +299,8 @@ const Home = () => {
                                     <br />
                                     End Date: {task.endDate.toDate().toDateString()}
                                     <br />
+                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} /> {/* Mostrar el contador de días */}
+                                    <br />
                                     <br />
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
@@ -300,6 +321,8 @@ const Home = () => {
                                     <br />
                                     End Date: {task.endDate.toDate().toDateString()}
                                     <br />
+                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} /> {/* Mostrar el contador de días */}
+                                    <br />
                                     <br />
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
@@ -319,6 +342,8 @@ const Home = () => {
                                     Start Date: {task.startDate.toDate().toDateString()}
                                     <br />
                                     End Date: {task.endDate.toDate().toDateString()}
+                                    <br />
+                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} /> {/* Mostrar el contador de días */}
                                     <br />
                                     <br />
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
