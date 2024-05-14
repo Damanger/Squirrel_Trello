@@ -109,7 +109,6 @@
 .task-content p span {
     border-radius: 10px;
     padding: 0.25rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .task-content p span.Sin-especificar {
@@ -142,11 +141,16 @@
     font-weight: lighter;
 }
 
-
 .delete {
     margin-left: auto;
     cursor: pointer;
     color: red;
+}
+
+.edit {
+    margin-left: auto;
+    cursor: pointer;
+    color: rgb(147, 147, 31);
 }
 
 .sign-out-container {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faAdd } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faAdd, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc  } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
@@ -27,7 +27,8 @@ const Home = () => {
     const [startDate, setStartDate] = useState(new Date()); // Definir startDate y su función de actualización
     const [endDate, setEndDate] = useState(new Date()); // Definir endDate y su función de actualización
     const [tag, setTag] = useState({ value: "", label: "" }); // Estado para el tag
-
+    const [editingTask, setEditingTask] = useState(null);
+    
     const handleOpenModal = () => {
         setShowModal(true);
     };
@@ -231,11 +232,32 @@ const Home = () => {
         // Determinar la clase CSS en función de los días restantes
         const textColorClass = daysDifference <= 5 ? 'red-text' : 'normal-text';
         return (
-            <div className={textColorClass}>
-                Days remaining: {daysDifference}
-            </div>
+            <>
+                Days remaining: <span className={textColorClass}>{daysDifference}</span>
+            </>
         );
     };
+
+    const handleOpenEditModal = (task) => {
+        setEditingTask(task);
+    };
+    
+    const handleEditTask = async (event) => {
+        event.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
+    
+        const db = getFirestore();
+        const user = getAuth().currentUser;
+        const userTaskRef = doc(db, `tasks/${user.uid}/userTasks`, editingTask.id);
+    
+        try {
+            await updateDoc(userTaskRef, { task: editingTask.task }); // Actualizar solo el nombre de la tarea
+            setEditingTask(null); // Cerrar el modal después de la edición
+            toast.success('Task updated correctly');
+        } catch (error) {
+            console.error('Error updating task:', error);
+            toast.error('Something went wrong');
+        }
+    };    
 
     return (
         <div className="home-container">
@@ -292,6 +314,28 @@ const Home = () => {
                     </div>
                 </div>
             )}
+            {editingTask && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={() => setEditingTask(null)}>&times;</span>
+                        <h2>Edit Task 📋</h2>
+                        <form onSubmit={handleEditTask}>
+                            <div className="form-group">
+                                <label htmlFor="editTaskName">Task Name 📄 :</label>
+                                <input
+                                    type="text"
+                                    id="editTaskName"
+                                    value={editingTask.task}
+                                    onChange={(e) => setEditingTask({ ...editingTask, task: e.target.value })}
+                                    required
+                                    autoComplete='off'
+                                />
+                            </div>
+                            <button type="submit">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            )}
             <div className="sign-out-container">
                 <button onClick={signOut}>Sign Out</button>
             </div>
@@ -308,12 +352,17 @@ const Home = () => {
                                     <br />
                                     End Date: {task.endDate.toDate().toDateString()}
                                     <br />
-                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} /> {/* Mostrar el contador de días */}
+                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
                                     <br />
                                     <br />
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
-                                <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('todo', task.id)} />
+                                <p>
+                                    <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
+                                    <br/>
+                                    <br/>
+                                    <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('todo', task.id)} />
+                                </p>
                             </div>
                         </div>
                     ))}
@@ -330,12 +379,17 @@ const Home = () => {
                                     <br />
                                     End Date: {task.endDate.toDate().toDateString()}
                                     <br />
-                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} /> {/* Mostrar el contador de días */}
+                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
                                     <br />
                                     <br />
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
-                                <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('doing', task.id)} />
+                                <p>
+                                    <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
+                                    <br/>
+                                    <br/>
+                                    <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('doing', task.id)} />
+                                </p>
                             </div>
                         </div>
                     ))}
@@ -352,12 +406,17 @@ const Home = () => {
                                     <br />
                                     End Date: {task.endDate.toDate().toDateString()}
                                     <br />
-                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} /> {/* Mostrar el contador de días */}
+                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
                                     <br />
                                     <br />
                                     Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
                                 </p>
-                                <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('done', task.id)} />
+                                <p>
+                                    <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
+                                    <br/>
+                                    <br/>
+                                    <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('done', task.id)} />
+                                </p>
                             </div>
                         </div>
                     ))}
