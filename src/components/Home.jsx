@@ -287,9 +287,11 @@ const Home = () => {
                                 <DatePicker
                                     selected={startDate}
                                     onChange={(date) => setStartDate(date)}
-                                    dateFormat="yyyy-MM-dd"
+                                    dateFormat="yyyy-MM-dd HH:mm"
                                     minDate={new Date()} // Establece la fecha mínima como la fecha actual
                                     required
+                                    showTimeSelect // Habilita la selección de la hora
+                                    timeFormat="HH:mm" // Establece el formato de la hora
                                 />
                             </div>
                             <div className="form-group">
@@ -297,8 +299,10 @@ const Home = () => {
                                 <DatePicker
                                     selected={endDate}
                                     onChange={(date) => setEndDate(date)}
-                                    dateFormat="yyyy-MM-dd"
+                                    dateFormat="yyyy-MM-dd HH:mm"
                                     minDate={startDate} // Establece la fecha mínima como startDate
+                                    showTimeSelect // Habilita la selección de la hora
+                                    timeFormat="HH:mm" // Establece el formato de la hora
                                 />
                             </div>
                             <div className="form-group">
@@ -362,9 +366,9 @@ const Home = () => {
                                     <strong>{task.task}</strong>
                                     <br/>
                                     <br/>
-                                    Start Date: {task.startDate.toDate().toDateString()}
+                                    Start Date: {task.startDate.toDate().toLocaleString()}
                                     <br/>
-                                    End Date: {task.endDate.toDate().toDateString()}
+                                    End Date: {task.endDate.toDate().toLocaleString()}
                                     <br/>
                                     <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
                                     <br/>
@@ -390,9 +394,9 @@ const Home = () => {
                                     <strong>{task.task}</strong>
                                     <br/>
                                     <br/>
-                                    Start Date: {task.startDate.toDate().toDateString()}
+                                    Start Date: {task.startDate.toDate().toLocaleString()}
                                     <br/>
-                                    End Date: {task.endDate.toDate().toDateString()}
+                                    End Date: {task.endDate.toDate().toLocaleString()}
                                     <br/>
                                     <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
                                     <br/>
@@ -418,9 +422,9 @@ const Home = () => {
                                     <strong>{task.task}</strong>
                                     <br/>
                                     <br/>
-                                    Start Date: {task.startDate.toDate().toDateString()}
+                                    Start Date: {task.startDate.toDate().toLocaleString()}
                                     <br/>
-                                    End Date: {task.endDate.toDate().toDateString()}
+                                    End Date: {task.endDate.toDate().toLocaleString()}
                                     <br/>
                                     <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
                                     <br/>
