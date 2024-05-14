@@ -129,15 +129,21 @@ const Home = () => {
         event.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
         // Verificar si todos los campos obligatorios están llenos
         if (taskName.trim() !== '' && tag.toString().trim() !== '') { // Convertir tag a cadena de texto
-            // Llamar a la función handleAddTask con los datos del formulario
-            handleAddTask({
-                taskName: taskName,
-                startDate: startDate,
-                endDate: endDate,
-                tag: tag
-            });
+            // Verificar si la fecha final es mayor o igual a la fecha inicial
+            if (endDate >= startDate) {
+                // Llamar a la función handleAddTask con los datos del formulario
+                handleAddTask({
+                    taskName: taskName,
+                    startDate: startDate,
+                    endDate: endDate,
+                    tag: tag
+                });
             // Cerrar el modal después de agregar la tarea correctamente
             handleCloseModal();
+            } else {
+                // Mostrar mensaje de error si la fecha final es menor que la fecha inicial
+                toast.error('End date must be greater than or equal to start date');
+            }
         } else {
             // Mostrar mensaje de error si los campos obligatorios están vacíos
             toast.error('Please fill all required fields');
