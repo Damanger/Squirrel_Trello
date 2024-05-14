@@ -341,11 +341,11 @@ const Home = () => {
                             <div className="form-group">
                                 <label htmlFor="editTag">Tag 🏷️ :</label>
                                 <select id="editTag" value={editingTask.tag} onChange={(e) => setEditingTask({ ...editingTask, tag: e.target.value })} required>
-                                    <option value="Sin especificar">Sin especificar</option>
-                                    <option value="Bajo">Bajo</option>
+                                    <option value="Unspecified">Unspecified</option>
+                                    <option value="Low">Low</option>
                                     <option value="Normal">Normal</option>
-                                    <option value="Importante">Importante</option>
-                                    <option value="Urgente">Urgente</option>
+                                    <option value="Important">Important</option>
+                                    <option value="Urgent">Urgent</option>
                                 </select>
                             </div>
                             <button type="submit">Save Changes</button>
