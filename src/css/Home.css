@@ -115,13 +115,13 @@
     padding: 0.25rem;
 }
 
-.task-content p span.Sin-especificar {
+.task-content p span.Unspecified {
     background-color: green;
     color: white;
     font-weight: lighter;
 }
 
-.task-content p span.Bajo {
+.task-content p span.Low {
     background-color: #d1d10b;
     color: white;
     font-weight: lighter;
@@ -133,13 +133,13 @@
     font-weight: lighter;
 }
 
-.task-content p span.Importante {
+.task-content p span.Important {
     background-color: #c84a34;
     color: white;
     font-weight: lighter;
 }
 
-.task-content p span.Urgente {
+.task-content p span.Urgent {
     background-color: #bb0808;
     color: white;
     font-weight: lighter;
