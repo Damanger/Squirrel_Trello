@@ -93,6 +93,7 @@ const Home = () => {
             if (user) {
                 setUserAuthenticated(true);
                 fetchTasks(user); // Llama a la función para cargar las tareas del usuario
+                fetchBoardName(user); // Llama a la función para cargar el nombre del tablero
             } else {
                 setUserAuthenticated(false);
             }
@@ -114,6 +115,24 @@ const Home = () => {
             });
             setTasks(fetchedTasks);
         });
+    };
+
+    // Función para cargar el nombre del tablero desde la base de datos
+    const fetchBoardName = async (user) => {
+        const db = getFirestore();
+        const userUid = user.uid;
+        const boardRef = doc(db, `boards/${userUid}`);
+        try {
+            const boardSnapshot = await getDoc(boardRef);
+            if (boardSnapshot.exists()) {
+                const boardData = boardSnapshot.data();
+                setSavedBoardName(boardData.name);
+            } else {
+                console.log('Board snapshot does not exist');
+            }
+        } catch (error) {
+            console.error('Error fetching board name:', error);
+        }
     };
 
     // Función para manejar la apertura del modal para agregar teamworkers
@@ -401,18 +420,17 @@ const Home = () => {
                     <div className="adding">
                         <button className='add' onClick={handleOpenTeamworkersModal}><FontAwesomeIcon icon={faUserPlus}/></button>
                     </div>
+                    {/* Contenido del equipo */}
                     <div className="team-container">
-                        {/* Input para ingresar o renombrar el nombre del tablero */}
                         <input
                             type="text"
                             placeholder={renamed ? 'Rename your board' : 'Enter a name for your board'}
                             value={boardName}
                             onChange={handleChangeBoardName}
                         />
-                        {/* Botón para guardar el nombre del tablero */}
                         <button onClick={handleSaveBoardName}><FontAwesomeIcon icon={faSave}/></button>
-                        {/* Si el tablero ha sido renombrado, mostrar el nombre del tablero */}
-                        {renamed && <h2 style={{color:'white', fontSize:'2rem'}}>{savedBoardName}</h2>}
+                        {/* Si el tablero ha sido renombrado o si se ha cargado un nombre del tablero desde la base de datos, mostrar el nombre */}
+                        {(renamed || savedBoardName) && <h2 style={{color:'white', fontSize:'2rem'}}>{savedBoardName || boardName}</h2>}
                     </div>
                 </>
             ) : (
