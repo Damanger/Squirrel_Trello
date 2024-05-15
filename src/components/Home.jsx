@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faAdd, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faAdd, faEdit, faUserPlus, faSave } from '@fortawesome/free-solid-svg-icons';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc  } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
 import { toast } from 'react-toastify';
 import DatePicker from 'react-datepicker';
@@ -28,7 +28,50 @@ const Home = () => {
     const [endDate, setEndDate] = useState(new Date()); // Definir endDate y su función de actualización
     const [tag, setTag] = useState({ value: "", label: "" }); // Estado para el tag
     const [editingTask, setEditingTask] = useState(null);
-    
+    const [showTeamworkersModal, setShowTeamworkersModal] = useState(false); // Nuevo estado para controlar la visibilidad del modal
+    const [teamworkers, setTeamworkers] = useState([]); // Nuevo estado para almacenar la lista de correos electrónicos
+    const [teamworkerEmail, setTeamworkerEmail] = useState(''); // Nuevo estado para el correo electrónico de cada teamworker
+    const [showTeamContainer, setShowTeamContainer] = useState(false); // Estado para mostrar el contenido del equipo
+    const [boardName, setBoardName] = useState(''); // Estado para el nombre del tablero
+    const [renamed, setRenamed] = useState(false); // Estado para indicar si se ha cambiado el nombre del tablero
+    const [savedBoardName, setSavedBoardName] = useState('');
+
+    const handleChangeBoardName = (event) => {
+        setBoardName(event.target.value);
+    };
+
+    const handleSaveBoardName = async () => {
+        if (boardName.trim() !== '') {
+            try {
+                const auth = getAuth();
+                const user = auth.currentUser;
+                const db = getFirestore();
+                const userUid = user.uid;
+                const boardRef = doc(db, `boards/${userUid}`);
+                await updateDoc(boardRef, { name: boardName });
+
+                // Actualiza el estado para reflejar que el tablero ha sido renombrado
+                setRenamed(true);
+                // Actualiza el nombre del tablero guardado
+                setSavedBoardName(boardName);
+                // Borra el nombre del tablero del input
+                setBoardName('');
+
+                // Muestra el mensaje de éxito con el toast
+                toast.success('Board name saved successfully');
+            } catch (error) {
+                console.error('Error saving board name:', error);
+                toast.error('Error saving board name');
+            }
+        } else {
+            toast.error('Please enter a valid board name');
+        }
+    };
+
+    const handleToggleTeamContainer = () => {
+        setShowTeamContainer(!showTeamContainer); // Cambiar el estado para mostrar u ocultar el contenido del equipo
+    };
+
     const handleOpenModal = () => {
         setShowModal(true);
     };
@@ -72,7 +115,65 @@ const Home = () => {
             setTasks(fetchedTasks);
         });
     };
-    
+
+    // Función para manejar la apertura del modal para agregar teamworkers
+    const handleOpenTeamworkersModal = () => {
+        setShowTeamworkersModal(true);
+    };
+
+    // Función para manejar el cierre del modal para agregar teamworkers
+    const handleCloseTeamworkersModal = () => {
+        setShowTeamworkersModal(false);
+    };
+
+    // Función para manejar el envío del formulario de teamworkers
+    const handleSubmitTeamworkers = async (event) => {
+        event.preventDefault();
+        // Verificar si el campo de correo electrónico no está vacío
+        if (teamworkerEmail.trim() !== '') {
+            try {
+                // Agregar el correo electrónico a la lista de teamworkers en el estado
+                setTeamworkers([...teamworkers, teamworkerEmail]);
+                // Guardar el correo electrónico en la base de datos
+                await saveTeamworkerToDatabase(teamworkerEmail);
+                // Limpiar el campo de correo electrónico después de agregar
+                setTeamworkerEmail('');
+                toast.success('Teamworker added successfully');
+            } catch (error) {
+                console.error('Error adding teamworker:', error);
+                toast.error('Something went wrong');
+            }
+        } else {
+            toast.error('Please enter a valid email address');
+        }
+    };
+
+    // Función para guardar un teamworker en la base de datos
+    const saveTeamworkerToDatabase = async (email) => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+            const db = getFirestore();
+            const userUid = user.uid;
+            const teamworkersRef = doc(db, `teamworkers/${userUid}`);
+            try {
+                // Obtener el documento existente de teamworkers
+                const teamworkersDoc = await getDoc(teamworkersRef);
+                if (teamworkersDoc.exists()) {
+                    // Si el documento existe, actualizarlo agregando el nuevo correo electrónico a la lista existente
+                    const existingEmails = teamworkersDoc.data().emails || [];
+                    const updatedEmails = [...existingEmails, email];
+                    await updateDoc(teamworkersRef, { emails: updatedEmails });
+                } else {
+                    // Si el documento no existe, crear uno nuevo con el correo electrónico inicial
+                    await setDoc(teamworkersRef, { emails: [email] });
+                }
+            } catch (error) {
+                console.error('Error adding teamworker to database:', error);
+                throw error;
+            }
+        }
+    };
 
     // Verificar si el usuario está autenticado, si no, redirigir a la página de inicio
     if (!userAuthenticated) {
@@ -263,191 +364,242 @@ const Home = () => {
     };    
 
     return (
-        <div className="home-container">
-            {/* Modal */}
-            {showModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h2>Add a new task 📋</h2>
-                        <form onSubmit={handleAddTask}>
-                            <div className="form-group">
-                                <label htmlFor="taskName">Task Name 📄 :</label>
-                                <input
-                                    type="text"
-                                    id="taskName"
-                                    value={taskName}
-                                    onChange={(e) => setTaskName(e.target.value)}
-                                    required
-                                    autoComplete='off'
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="startDate">Start Date 🗓️ :</label>
-                                <DatePicker
-                                    selected={startDate}
-                                    onChange={(date) => setStartDate(date)}
-                                    dateFormat="yyyy-MM-dd HH:mm"
-                                    minDate={new Date()} // Establece la fecha mínima como la fecha actual
-                                    required
-                                    showTimeSelect // Habilita la selección de la hora
-                                    timeFormat="HH:mm" // Establece el formato de la hora
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="endDate">End Date 🏁 :</label>
-                                <DatePicker
-                                    selected={endDate}
-                                    onChange={(date) => setEndDate(date)}
-                                    dateFormat="yyyy-MM-dd HH:mm"
-                                    minDate={startDate} // Establece la fecha mínima como startDate
-                                    showTimeSelect // Habilita la selección de la hora
-                                    timeFormat="HH:mm" // Establece el formato de la hora
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="tag">Tag 🏷️ :</label>
-                                <select id="tag" value={tag.value} onChange={handleTagChange} required>
-                                    <option value="" disabled>Selecciona una opción</option>
-                                    <option value="Unspecified">Unspecified</option>
-                                    <option value="Low">Low</option>
-                                    <option value="Normal">Normal</option>
-                                    <option value="Important">Important</option>
-                                    <option value="Urgent">Urgent</option>
-                                </select>
-                            </div>
-                            <button type="submit" onClick={handleSubmit}>Add Task</button>
-                        </form>
-                    </div>
-                </div>
-            )}
-            {editingTask && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <span className="close" onClick={() => setEditingTask(null)}>&times;</span>
-                        <h2>Edit Task 📋</h2>
-                        <form onSubmit={handleEditTask}>
-                            <div className="form-group">
-                                <label htmlFor="editTaskName">Task Name 📄 :</label>
-                                <input
-                                    type="text"
-                                    id="editTaskName"
-                                    value={editingTask.task}
-                                    onChange={(e) => setEditingTask({ ...editingTask, task: e.target.value })}
-                                    required
-                                    autoComplete='off'
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="editTag">Tag 🏷️ :</label>
-                                <select id="editTag" value={editingTask.tag} onChange={(e) => setEditingTask({ ...editingTask, tag: e.target.value })} required>
-                                    <option value="Unspecified">Unspecified</option>
-                                    <option value="Low">Low</option>
-                                    <option value="Normal">Normal</option>
-                                    <option value="Important">Important</option>
-                                    <option value="Urgent">Urgent</option>
-                                </select>
-                            </div>
-                            <button type="submit">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
-            )}
+        <>
             <div className="sign-out-container">
                 <button onClick={signOut}>Sign Out</button>
             </div>
-            <div className="columns-container">
-                <div className="column" onDrop={(event) => handleDrop(event, 'todo')} onDragOver={(event) => allowDrop(event, 'todo')}>
-                    <h2>📋 To Do 📋</h2>
-                    {sortTasksByDaysRemaining(tasks.todo).map((task) => (
-                        <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'todo')}>
-                            <div className="task-content">
-                                <p>
-                                    <strong>{task.task}</strong>
-                                    <br/>
-                                    <br/>
-                                    Start Date: {task.startDate.toDate().toLocaleString()}
-                                    <br/>
-                                    End Date: {task.endDate.toDate().toLocaleString()}
-                                    <br/>
-                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
-                                    <br/>
-                                    <br/>
-                                    Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
-                                </p>
-                                <p>
-                                    <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
-                                    <br/>
-                                    <br/>
-                                    <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('todo', task.id)} />
-                                </p>
+            {/* Botón para cambiar entre Team y Work Alone */}
+            <button onClick={handleToggleTeamContainer}>
+                {showTeamContainer ? 'Work Alone' : 'Team Work'}
+            </button>
+            {/* Modal para agregar teamworkers */}
+            {showTeamworkersModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={handleCloseTeamworkersModal}>&times;</span>
+                        <h2>Add Teamworkers</h2>
+                        <form onSubmit={handleSubmitTeamworkers}>
+                            <div className="form-group">
+                                <label htmlFor="teamworkerEmail">Email Address:</label>
+                                <input
+                                    type="email"
+                                    id="teamworkerEmail"
+                                    value={teamworkerEmail}
+                                    onChange={(e) => setTeamworkerEmail(e.target.value)}
+                                    required
+                                    autoComplete='off'
+                                />
+                            </div>
+                            <button type="submit">Add</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {/* Contenido de home-container o team-container según el estado */}
+            {showTeamContainer ? (
+                <>
+                    <div className="adding">
+                        <button className='add' onClick={handleOpenTeamworkersModal}><FontAwesomeIcon icon={faUserPlus}/></button>
+                    </div>
+                    <div className="team-container">
+                        {/* Input para ingresar o renombrar el nombre del tablero */}
+                        <input
+                            type="text"
+                            placeholder={renamed ? 'Rename your board' : 'Enter a name for your board'}
+                            value={boardName}
+                            onChange={handleChangeBoardName}
+                        />
+                        {/* Botón para guardar el nombre del tablero */}
+                        <button onClick={handleSaveBoardName}><FontAwesomeIcon icon={faSave}/></button>
+                        {/* Si el tablero ha sido renombrado, mostrar el nombre del tablero */}
+                        {renamed && <h2 style={{color:'white', fontSize:'2rem'}}>{savedBoardName}</h2>}
+                    </div>
+                </>
+            ) : (
+                <div className="home-container">
+                    {/* Modal */}
+                    {showModal && (
+                        <div className="modal">
+                            <div className="modal-content">
+                                <span className="close" onClick={handleCloseModal}>&times;</span>
+                                <h2>Add a new task 📋</h2>
+                                <form onSubmit={handleAddTask}>
+                                    <div className="form-group">
+                                        <label htmlFor="taskName">Task Name 📄 :</label>
+                                        <input
+                                            type="text"
+                                            id="taskName"
+                                            value={taskName}
+                                            onChange={(e) => setTaskName(e.target.value)}
+                                            required
+                                            autoComplete='off'
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="startDate">Start Date 🗓️ :</label>
+                                        <DatePicker
+                                            selected={startDate}
+                                            onChange={(date) => setStartDate(date)}
+                                            dateFormat="yyyy-MM-dd HH:mm"
+                                            minDate={new Date()} // Establece la fecha mínima como la fecha actual
+                                            required
+                                            showTimeSelect // Habilita la selección de la hora
+                                            timeFormat="HH:mm" // Establece el formato de la hora
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="endDate">End Date 🏁 :</label>
+                                        <DatePicker
+                                            selected={endDate}
+                                            onChange={(date) => setEndDate(date)}
+                                            dateFormat="yyyy-MM-dd HH:mm"
+                                            minDate={startDate} // Establece la fecha mínima como startDate
+                                            showTimeSelect // Habilita la selección de la hora
+                                            timeFormat="HH:mm" // Establece el formato de la hora
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="tag">Tag 🏷️ :</label>
+                                        <select id="tag" value={tag.value} onChange={handleTagChange} required>
+                                            <option value="" disabled>Selecciona una opción</option>
+                                            <option value="Unspecified">Unspecified</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="Important">Important</option>
+                                            <option value="Urgent">Urgent</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" onClick={handleSubmit}>Add Task</button>
+                                </form>
                             </div>
                         </div>
-                    ))}
-                </div>
-                <div className="column" onDrop={(event) => handleDrop(event, 'doing')} onDragOver={(event) => allowDrop(event, 'doing')}>
-                    <h2>👨🏻‍💻 Doing 👩🏻‍💻</h2>
-                    {sortTasksByDaysRemaining(tasks.doing).map((task) => (
-                        <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'doing')}>
-                            <div className="task-content">
-                                <p>
-                                    <strong>{task.task}</strong>
-                                    <br/>
-                                    <br/>
-                                    Start Date: {task.startDate.toDate().toLocaleString()}
-                                    <br/>
-                                    End Date: {task.endDate.toDate().toLocaleString()}
-                                    <br/>
-                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
-                                    <br/>
-                                    <br/>
-                                    Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
-                                </p>
-                                <p>
-                                    <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
-                                    <br/>
-                                    <br/>
-                                    <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('doing', task.id)} />
-                                </p>
+                    )}
+                    {editingTask && (
+                        <div className="modal">
+                            <div className="modal-content">
+                                <span className="close" onClick={() => setEditingTask(null)}>&times;</span>
+                                <h2>Edit Task 📋</h2>
+                                <form onSubmit={handleEditTask}>
+                                    <div className="form-group">
+                                        <label htmlFor="editTaskName">Task Name 📄 :</label>
+                                        <input
+                                            type="text"
+                                            id="editTaskName"
+                                            value={editingTask.task}
+                                            onChange={(e) => setEditingTask({ ...editingTask, task: e.target.value })}
+                                            required
+                                            autoComplete='off'
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="editTag">Tag 🏷️ :</label>
+                                        <select id="editTag" value={editingTask.tag} onChange={(e) => setEditingTask({ ...editingTask, tag: e.target.value })} required>
+                                            <option value="Unspecified">Unspecified</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="Important">Important</option>
+                                            <option value="Urgent">Urgent</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit">Save Changes</button>
+                                </form>
                             </div>
                         </div>
-                    ))}
-                </div>
-                <div className="column" onDrop={(event) => handleDrop(event, 'done')} onDragOver={(event) => allowDrop(event, 'done')}>
-                    <h2>✅ Done ✅</h2>
-                    {sortTasksByDaysRemaining(tasks.done).map((task) => (
-                        <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'done')}>
-                            <div className="task-content">
-                                <p>
-                                    <strong>{task.task}</strong>
-                                    <br/>
-                                    <br/>
-                                    Start Date: {task.startDate.toDate().toLocaleString()}
-                                    <br/>
-                                    End Date: {task.endDate.toDate().toLocaleString()}
-                                    <br/>
-                                    <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
-                                    <br/>
-                                    <br/>
-                                    Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
-                                </p>
-                                <p>
-                                    <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
-                                    <br/>
-                                    <br/>
-                                    <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('done', task.id)} />
-                                </p>
-                            </div>
+                    )}
+                    <div className="columns-container">
+                        <div className="column" onDrop={(event) => handleDrop(event, 'todo')} onDragOver={(event) => allowDrop(event, 'todo')}>
+                            <h2>📋 To Do 📋</h2>
+                            {sortTasksByDaysRemaining(tasks.todo).map((task) => (
+                                <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'todo')}>
+                                    <div className="task-content">
+                                        <p>
+                                            <strong>{task.task}</strong>
+                                            <br/>
+                                            <br/>
+                                            Start Date: {task.startDate.toDate().toLocaleString()}
+                                            <br/>
+                                            End Date: {task.endDate.toDate().toLocaleString()}
+                                            <br/>
+                                            <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
+                                            <br/>
+                                            <br/>
+                                            Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
+                                        </p>
+                                        <p>
+                                            <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
+                                            <br/>
+                                            <br/>
+                                            <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('todo', task.id)} />
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                        <div className="column" onDrop={(event) => handleDrop(event, 'doing')} onDragOver={(event) => allowDrop(event, 'doing')}>
+                            <h2>👨🏻‍💻 Doing 👩🏻‍💻</h2>
+                            {sortTasksByDaysRemaining(tasks.doing).map((task) => (
+                                <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'doing')}>
+                                    <div className="task-content">
+                                        <p>
+                                            <strong>{task.task}</strong>
+                                            <br/>
+                                            <br/>
+                                            Start Date: {task.startDate.toDate().toLocaleString()}
+                                            <br/>
+                                            End Date: {task.endDate.toDate().toLocaleString()}
+                                            <br/>
+                                            <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
+                                            <br/>
+                                            <br/>
+                                            Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
+                                        </p>
+                                        <p>
+                                            <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
+                                            <br/>
+                                            <br/>
+                                            <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('doing', task.id)} />
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="column" onDrop={(event) => handleDrop(event, 'done')} onDragOver={(event) => allowDrop(event, 'done')}>
+                            <h2>✅ Done ✅</h2>
+                            {sortTasksByDaysRemaining(tasks.done).map((task) => (
+                                <div key={task.id} className="card" draggable="true" onDragStart={(event) => handleDragStart(event, task, 'done')}>
+                                    <div className="task-content">
+                                        <p>
+                                            <strong>{task.task}</strong>
+                                            <br/>
+                                            <br/>
+                                            Start Date: {task.startDate.toDate().toLocaleString()}
+                                            <br/>
+                                            End Date: {task.endDate.toDate().toLocaleString()}
+                                            <br/>
+                                            <DaysCounter startDate={task.startDate.toDate()} endDate={task.endDate.toDate()} />
+                                            <br/>
+                                            <br/>
+                                            Tag: <span className={task.tag.replace(' ', '-')}>{task.tag}</span>
+                                        </p>
+                                        <p>
+                                            <FontAwesomeIcon className='edit' icon={faEdit} onClick={() => handleOpenEditModal(task)}/>
+                                            <br/>
+                                            <br/>
+                                            <FontAwesomeIcon className='delete' icon={faTrash} onClick={() => handleDeleteTask('done', task.id)} />
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="adding">
+                        <button className='add' onClick={handleOpenModal}><FontAwesomeIcon icon={faAdd} /></button>
+                    </div>
+                    {/* Muestra el indicador de arrastre solo cuando se arrastra sobre una columna */}
+                    {draggingOver && <div className="drag-indicator">{`Drop here into ${draggingOver}`}</div>}
                 </div>
-            </div>
-            <div className="adding">
-                <button className='add' onClick={handleOpenModal}><FontAwesomeIcon icon={faAdd} /></button>
-            </div>
-            {/* Muestra el indicador de arrastre solo cuando se arrastra sobre una columna */}
-            {draggingOver && <div className="drag-indicator">{`Drop here into ${draggingOver}`}</div>}
-        </div>
+            )}
+        </>
     );
 };
 
