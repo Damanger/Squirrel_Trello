@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faAdd, faEdit, faUserPlus, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faAdd, faEdit, faUserPlus, faSave, faA } from '@fortawesome/free-solid-svg-icons';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
@@ -422,15 +422,27 @@ const Home = () => {
                     </div>
                     {/* Contenido del equipo */}
                     <div className="team-container">
-                        <input
-                            type="text"
-                            placeholder={renamed ? 'Rename your board' : 'Enter a name for your board'}
-                            value={boardName}
-                            onChange={handleChangeBoardName}
-                        />
-                        <button onClick={handleSaveBoardName}><FontAwesomeIcon icon={faSave}/></button>
+                        <div className='centering'>
+                            <input
+                                className='input-team'
+                                type="text"
+                                placeholder={renamed ? 'Rename your board' : 'Enter a name for your board'}
+                                value={boardName}
+                                onChange={handleChangeBoardName}
+                            />
+                            <button onClick={handleSaveBoardName}><FontAwesomeIcon icon={faSave}/></button>
+                        </div>
                         {/* Si el tablero ha sido renombrado o si se ha cargado un nombre del tablero desde la base de datos, mostrar el nombre */}
                         {(renamed || savedBoardName) && <h2 style={{color:'white', fontSize:'2rem'}}>{savedBoardName || boardName}</h2>}
+                        <div className='centering'>
+                            <input
+                                className='input-team'
+                                type='text'
+                                placeholder='Type column name to add'
+                            />
+                            <button><FontAwesomeIcon icon={faAdd}/></button>
+                        </div>
+                        <h2 className='prueba'>🔧 Still working... 🔧</h2>
                     </div>
                 </>
             ) : (

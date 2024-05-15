@@ -337,3 +337,23 @@ label {
 .normal-text {
     color: inherit;
 }
+
+.input-team{
+    width: 11rem;
+    height: 2.5rem;
+}
+
+.centering{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.prueba{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 5rem;
+}
