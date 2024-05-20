@@ -420,7 +420,7 @@ const Home = () => {
                     <div className="adding">
                         <button className='add' onClick={handleOpenTeamworkersModal}><FontAwesomeIcon icon={faUserPlus}/></button>
                     </div>
-                    {/* Contenido del equipo */}
+                    {/* Contenido del equipo */} 
                     <div className="team-container">
                         <div className='centering'>
                             <input
